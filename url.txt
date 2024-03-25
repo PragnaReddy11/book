@@ -1,2 +1,25 @@
 
 http://ALB-54443636.us-east-1.elb.amazonaws.com:80
+# Builder stage
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install¯
+
+COPY . .
+
+# Final stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy built files from builder stage
+COPY --from=builder /app .
+
+# Export port 80
+EXPOSE 80
+
+# Start the node application
+CMD [ "node", "index.js" ] 
